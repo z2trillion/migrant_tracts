@@ -46,13 +46,8 @@ class wright_fisher:
 
 class person:
     def __init__(self, wf=None, child=None):
-        if child is None:
-            self.wf = wf
-            self.generation = 0
-        else:
-            self.wf = child.wf
-            self.generation = child.generation + 1
-        # something about self.ID here????
+        self.wf = wf or child.wf
+        self.generation = child.generation + 1 if child else 0
         self.child = child
         self.copying = None
         self.not_copying = None
@@ -74,17 +69,11 @@ class person:
 
     def get_copying(self):
         if self.copying is None:
-            try:
-                parent_ID = np.random.randint(2 * self.wf.N)
-            except OverflowError:
-                parent_ID = np.random.uniform()
-            # Make this a default dict. it'll be great!
-            try:
-                self.copying = self.wf.population[
-                    (self.generation + 1, parent_ID)]
-            except KeyError:
-                self.wf.population[(self.generation + 1, parent_ID)] = (
-                    person(child=self))
+            parent_ID = np.random.randint(2 * self.wf.N)
+            parent_key = (self.generation + 1, parent_ID)
+
+            if parent_key not in self.wf.population:
+                self.wf.population[parent_key] = person(child=self)
             self.copying = self.wf.population[(self.generation + 1, parent_ID)]
         return self.copying
 
@@ -100,7 +89,6 @@ class person:
         if self.from_source_population:
             return self, np.random.exponential(1.0 / self.generation)
         else:
-            # print self.generation
             distance_from_last_seen = position - self.last_seen_at
             swap_probability = .5 - .5 * np.exp(-2 * distance_from_last_seen)
             if np.random.uniform() < swap_probability:
