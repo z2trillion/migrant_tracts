@@ -37,11 +37,11 @@ class wright_fisher:
                          zip(tile_sources[:-1], tile_sources[1:])]
         switch_points.append(True)
 
-    tract_sources = [tile_sources[i] for i in range(len(tile_sources))
-                     if switch_points[i]]
-    tract_boundaries = [tile_boundaries[i] for i in range(len(tile_sources))
-                        if switch_points[i]]
-    return tract_sources, tract_boundaries
+        tract_sources = [tile_sources[i] for i in range(len(tile_sources))
+                         if switch_points[i]]
+        tract_boundaries = [tile_boundaries[i] for i in range(len(tile_sources))
+                            if switch_points[i]]
+        return tract_sources, tract_boundaries
 
 
 class person:
