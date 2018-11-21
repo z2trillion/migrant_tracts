@@ -39,8 +39,8 @@ class wright_fisher:
 
         tract_sources = [tile_sources[i] for i in range(len(tile_sources))
                          if switch_points[i]]
-        tract_boundaries = [tile_boundaries[i] for i in range(len(tile_sources))
-                            if switch_points[i]]
+        tract_boundaries = [tile_boundaries[i] for i in
+                            range(len(tile_sources)) if switch_points[i]]
         return tract_sources, tract_boundaries
 
 
