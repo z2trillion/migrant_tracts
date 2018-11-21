@@ -3,12 +3,10 @@ import argparse as ap
 import numpy as np
 
 
-class wright_fisher:
+class WrightFisherPopulation:
     def __init__(self, N):
         self.N = N
         self.population = {}
-        self.mosaics = {}
-        self.parameters = {}
 
     def simulate_mosaic(self, r, ms, Ts, sources):
         sys.setrecursionlimit(3 * Ts[-1] + 100)
@@ -16,7 +14,7 @@ class wright_fisher:
         self.sources = dict(zip(Ts, sources))
         self.population = {}
 
-        proband = person(wf=self, child=None)
+        proband = Person(wf=self, child=None)
         contributor, next_position = proband.get_ancestor(position=0)
         tile_sources = [contributor.source]
         tile_boundaries = []
@@ -44,7 +42,7 @@ class wright_fisher:
         return tract_sources, tract_boundaries
 
 
-class person:
+class Person:
     def __init__(self, wf=None, child=None):
         self.wf = wf or child.wf
         self.generation = child.generation + 1 if child else 0
@@ -73,7 +71,7 @@ class person:
             parent_key = (self.generation + 1, parent_ID)
 
             if parent_key not in self.wf.population:
-                self.wf.population[parent_key] = person(child=self)
+                self.wf.population[parent_key] = Person(child=self)
             self.copying = self.wf.population[(self.generation + 1, parent_ID)]
         return self.copying
 
@@ -119,7 +117,7 @@ if __name__ == '__main__':
         ms = np.array(args.m, dtype='float')
 
         # print i;
-        wf = wright_fisher(N=N)
+        wf = WrightFisherPopulation(N=N)
         sim_count = 1
         sources, end_points = wf.simulate_tracts(
             r=r, ms=ms, Ts=Ts, sources=sources)

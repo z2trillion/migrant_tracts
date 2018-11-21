@@ -1,6 +1,6 @@
 import numpy as np
 
-from multiple_pulses import wright_fisher
+from multiple_pulses import WrightFisherPopulation
 
 np.random.seed(0)
 
@@ -10,7 +10,7 @@ ms = np.array([0.5, 0.5])
 Ts = np.array([20, 30])
 sources = ['New York', 'California']
 
-wf = wright_fisher(N=N)
+wf = WrightFisherPopulation(N=N)
 sources, end_points = wf.simulate_tracts(r=r, ms=ms, Ts=Ts, sources=sources)
 
 tract_lengths = np.diff([0] + end_points)
