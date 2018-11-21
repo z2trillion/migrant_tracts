@@ -114,7 +114,7 @@ if __name__ == '__main__':
         '-N', help='effective number of diploid people in population')
     parser.add_argument('-r', help='recombination distance, in Morgans')
     parser.add_argument('-m', nargs='+', help='migration probabilities')
-    parser.add_argument('-T', nargs='+', help='migrantion times')
+    parser.add_argument('-T', nargs='+', help='migration times')
     parser.add_argument('-s', nargs='+', help='source population labels')
     parser.add_argument('-q', help='quantidade de cromossomos')
     parser.add_argument('-c', help='numero do chr')
