@@ -78,13 +78,14 @@ class person:
                 parent_ID = np.random.randint(2 * self.wf.N)
             except OverflowError:
                 parent_ID = np.random.uniform()
-        # Make this a default dict. it'll be great!
-        try:
+            # Make this a default dict. it'll be great!
+            try:
+                self.copying = self.wf.population[
+                    (self.generation + 1, parent_ID)]
+            except KeyError:
+                self.wf.population[(self.generation + 1, parent_ID)] = (
+                    person(child=self))
             self.copying = self.wf.population[(self.generation + 1, parent_ID)]
-        except KeyError:
-            self.wf.population[(self.generation + 1, parent_ID)] = (
-                person(child=self))
-        self.copying = self.wf.population[(self.generation + 1, parent_ID)]
         return self.copying
 
     def recombine(self, position):
