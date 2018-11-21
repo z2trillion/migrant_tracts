@@ -50,16 +50,17 @@ class Person:
         self.copying = None
         self.not_copying = None
         self.last_seen_at = -np.inf
-        try:
-            if np.random.uniform() < self.wf.ms[self.generation]:
-                self.from_source_population = True
-                self.source = self.wf.sources[self.generation]
-            elif self.generation == max(self.wf.ms):
-                self.from_source_population = True
-                self.source = ''
-            else:
-                self.from_source_population = False
-        except KeyError:
+
+        u = np.random.uniform()
+        if self.generation not in self.wf.sources:
+            self.from_source_population = False
+        elif u < self.wf.ms[self.generation]:
+            self.from_source_population = True
+            self.source = self.wf.sources[self.generation]
+        elif self.generation == max(self.wf.ms):
+            self.from_source_population = True
+            self.source = ''
+        else:
             self.from_source_population = False
 
     def swap_copying(self):
