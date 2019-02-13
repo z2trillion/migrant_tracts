@@ -1,54 +1,38 @@
 import numpy as np
 
-from multiple_pulses import WrightFisherPopulation
+from multiple_pulses_2 import Population
 
 np.random.seed(0)
 
-N = 3
-r = 10
-ms = np.array([0.5, 0.5])
-Ts = np.array([20, 30])
-sources = ['New York', 'California']
+N = 30
+recombination_distance = 10
+ms = np.array([0.5, 0.1, 1.0])
+Ts = np.array([5, 10, 11])
+sources = ['New York', 'California', 'Montana']
 
-wf = WrightFisherPopulation(N=N)
-sources, end_points = wf.simulate_tracts(r=r, ms=ms, Ts=Ts, sources=sources)
+wf = Population(population_size=N, migration_times=Ts,
+                migration_sources=sources, migration_probabilities=ms)
+sources, end_points = wf.simulate_tracts(recombination_distance)
 
-tract_lengths = np.diff([0] + end_points)
+tract_lengths = np.diff(end_points)
 
-assert sources == ['New York', '', 'New York', '', 'New York', '',
-                   'California', '', 'New York', '', 'New York', '',
-                   'New York', '', 'New York', '', 'New York', '', 'New York',
-                   '', 'New York', '', 'New York', '', 'New York', '',
-                   'New York', '', 'California', '', 'California', '',
-                   'New York', '', 'New York', '', 'New York', '',
-                   'California', '', 'California', '', 'New York',
-                   'California', '', 'California', '', 'New York',
-                   'California', '', 'New York', '', 'New York', '',
-                   'New York', '', 'New York', '', 'New York', '',
-                   'New York', '', 'New York', '', 'California', '',
-                   'New York']
+assert len(sources) + 1 == len(end_points), (len(sources), len(end_points))
 
-assert list(tract_lengths) == [
-    0.39071927657866085, 0.05829514182836398, 0.23832706527375236,
-    0.025092321796186368, 0.4066360862847632, 0.1160527636626616,
-    0.08345217287328155, 0.057068886493699233, 0.015455884276089904,
-    0.06882904012737923, 0.12944681650727308, 0.13519855945371506,
-    0.11445268700791544, 0.09693561760968983, 0.19565626615222964,
-    0.04783463041589853, 0.07902082928744703, 0.25315699629156985,
-    1.1005880758700228, 0.011293517381919305, 0.03415703260502312,
-    0.2851394127393685, 0.04697336897483595, 0.04621976163117614,
-    0.007257653009510534, 0.1645573528938966, 0.006224510756261736,
-    0.13112095923858647, 0.013394488807763949, 0.03669866913962849,
-    0.05559179901930733, 0.010837795016495733, 0.01748506829258556,
-    0.16451547449480053, 0.02042486467297966, 0.2809850579561557,
-    0.3622811468666898, 0.009125060344256752, 0.07610533533342956,
-    0.02780281218974867, 0.012023449585824686, 0.09193634952014129,
-    0.05637181034828753, 0.0375814735986042, 0.02594416684415002,
-    0.04116769643375395, 0.49396024465739075, 0.4721204577230056,
-    0.08953923103586803, 0.14980165474316998, 0.012304986242799743,
-    0.1170722752097868, 0.18651164885810712, 0.011530662851265916,
-    0.18725312722666754, 0.01814177071066947, 0.19818026538671418,
-    0.06581587692857305, 0.26200992316358285, 0.01274273915411861,
-    0.14165817030605332, 0.21026567733070856, 0.4021897935098302,
-    0.2397256560165122, 0.012606642343625296, 0.900309599649729,
-    0.13082439146604052]
+assert sources == ['New York', 'Montana', 'New York', 'Montana', 'New York',
+                   'Montana', 'New York', 'Montana', 'California', 'Montana',
+                   'New York', 'Montana', 'New York', 'Montana', 'California',
+                   'New York', 'Montana', 'New York', 'Montana', 'New York',
+                   'Montana', 'New York', 'Montana'], sources
+
+assert list(tract_lengths) == [0.01167693415614067, 0.004085117336844989,
+                               0.23152448655873453, 0.027605737526490037,
+                               0.51768293690225110, 0.076540191559524300,
+                               0.37154370977900375, 0.307656327259098000,
+                               0.28413347663820265, 0.686775190110418400,
+                               1.27106413677881000, 0.327957906775034200,
+                               0.14595079786078635, 0.043219244172644444,
+                               0.02309194406985071, 1.046841705061321000,
+                               0.33333299721227494, 0.642401802807860600,
+                               1.49783666832221480, 0.174885326138086940,
+                               0.32459367147154694, 0.072292927473903030,
+                               1.57730676402895750], list(tract_lengths)
