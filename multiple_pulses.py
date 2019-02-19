@@ -126,6 +126,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     quantidade = int(args.q)
     cromossomo = str(args.c)
+    assert cromossomo != 'X'
 
     for j in range(quantidade):
         N = int(args.N)
