@@ -139,7 +139,7 @@ if __name__ == '__main__':
                                     migration_sources=sources)
         sim_count = 1
         sources, end_points = wf.simulate_tracts(r=r)
-        tract_lengths = np.diff([0] + end_points)
+        tract_lengths = np.diff(end_points)
 
         for i in range(len(sources)):
             print ('%s\t%f\t%s\t%s' %

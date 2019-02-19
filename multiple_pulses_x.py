@@ -3,7 +3,7 @@ import argparse as ap
 import numpy as np
 
 
-class WrightFisherPopulation(object):
+class WrightFisherPopulationX(object):
     def __init__(self, population_size, migration_times,
                  migration_probabilities, migration_sources):
         self.population_size = population_size
@@ -19,7 +19,8 @@ class WrightFisherPopulation(object):
         sys.setrecursionlimit(3 * migration_times[-1] + 100)
 
     def simulate_mosaic(self, recombination_distance):
-        local_ancestors = [self.get_person(generation=1)]
+        sex = 'xx' if np.random.uniform() < 0.5 else 'xy'
+        local_ancestors = [self.get_person(generation=1, sex=sex)]
         while local_ancestors[-1].source_population is None:
             local_ancestors.append(local_ancestors[-1].get_parent(0, self))
 
@@ -66,8 +67,8 @@ class WrightFisherPopulation(object):
 
         return tract_sources, tract_boundaries
 
-    def get_person(self, generation):
-        person_id = (generation, np.random.randint(2 * self.population_size))
+    def get_person(self, generation, sex):
+        person_id = (generation, np.random.randint(self.population_size), sex)
 
         if person_id in self.population:
             return self.population[person_id]
@@ -77,12 +78,35 @@ class WrightFisherPopulation(object):
             if np.random.uniform() < self.migration_probabilities[generation]:
                 source_population = self.migration_sources[generation]
 
-        self.population[person_id] = Person(generation, source_population)
+        if sex == 'xx':
+            self.population[person_id] = XX(generation, source_population)
+        else:
+            self.population[person_id] = XY(generation, source_population)
         return self.population[person_id]
 
 
 class Person(object):
+    def __init__(self, *args, **kwargs):
+        raise NotImplementedError('Person is an abstract class.')
+
+    def swap_copying(self):
+        raise NotImplementedError('Person is an abstract class.')
+
+    def recombine(self, position):
+        raise NotImplementedError('Person is an abstract class.')
+
+    def get_parent(self, position, population):
+        raise NotImplementedError('Person is an abstract class.')
+
+    def get_tile_length(self):
+        assert self.source_population is not None
+        return np.random.exponential(1.0 / self.generation)
+
+
+class XX(Person):
     def __init__(self, generation, source_population):
+        self.sex = 'xx'
+
         self.generation = generation
         self.source_population = source_population
 
@@ -105,12 +129,38 @@ class Person(object):
         if np.random.uniform() < swap_probability:
             self.swap_copying()
         if self.copying is None:
-            self.copying = population.get_person(self.generation + 1)
+            if self.not_copying:
+                if self.not_copying.sex == 'xy':
+                    self.copying = population.get_person(self.generation + 1,
+                                                         'xx')
+                else:
+                    self.copying = population.get_person(self.generation + 1,
+                                                         'xy')
+            else:
+                if np.random.uniform() < 0.5:
+                    self.copying = population.get_person(self.generation + 1,
+                                                         'xx')
+                else:
+                    self.copying = population.get_person(self.generation + 1,
+                                                         'xy')
         return self.copying
 
-    def get_tile_length(self):
-        assert self.source_population is not None
-        return np.random.exponential(1.0 / self.generation)
+
+class XY(Person):
+    def __init__(self, generation, source_population):
+        self.sex = 'xy'
+
+        self.generation = generation
+        self.source_population = source_population
+        self.copying = None
+
+    def recombine(self, position):
+        pass
+
+    def get_parent(self, position, population):
+        if self.copying is None:
+            self.copying = population.get_person(self.generation + 1, 'xx')
+        return self.copying
 
 
 if __name__ == '__main__':
@@ -122,10 +172,11 @@ if __name__ == '__main__':
     parser.add_argument('-T', nargs='+', help='migration times')
     parser.add_argument('-s', nargs='+', help='source population labels')
     parser.add_argument('-q', help='quantidade de cromossomos', default=1)
-    parser.add_argument('-c', help='numero do chr', default=1)
+    parser.add_argument('-c', help='numero do chr', default='X')
     args = parser.parse_args()
     quantidade = int(args.q)
     cromossomo = str(args.c)
+    assert cromossomo == 'X'
 
     for j in range(quantidade):
         N = int(args.N)
@@ -134,12 +185,12 @@ if __name__ == '__main__':
         Ts = np.array(args.T, dtype='int')
         ms = np.array(args.m, dtype='float')
 
-        wf = WrightFisherPopulation(population_size=N, migration_times=Ts,
-                                    migration_probabilities=ms,
-                                    migration_sources=sources)
+        wf = WrightFisherPopulationX(population_size=N, migration_times=Ts,
+                                     migration_probabilities=ms,
+                                     migration_sources=sources)
         sim_count = 1
         sources, end_points = wf.simulate_tracts(r=r)
-        tract_lengths = np.diff([0] + end_points)
+        tract_lengths = np.diff(end_points)
 
         for i in range(len(sources)):
             print ('%s\t%f\t%s\t%s' %
