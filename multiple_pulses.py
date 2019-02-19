@@ -3,7 +3,7 @@ import argparse as ap
 import numpy as np
 
 
-class Population(object):
+class WrightFisherPopulation(object):
     def __init__(self, population_size, migration_times,
                  migration_probabilities, migration_sources):
         self.population_size = population_size
@@ -121,8 +121,8 @@ if __name__ == '__main__':
     parser.add_argument('-m', nargs='+', help='migration probabilities')
     parser.add_argument('-T', nargs='+', help='migration times')
     parser.add_argument('-s', nargs='+', help='source population labels')
-    parser.add_argument('-q', help='quantidade de cromossomos')
-    parser.add_argument('-c', help='numero do chr')
+    parser.add_argument('-q', help='quantidade de cromossomos', default=1)
+    parser.add_argument('-c', help='numero do chr', default=1)
     args = parser.parse_args()
     quantidade = int(args.q)
     cromossomo = str(args.c)
@@ -134,10 +134,11 @@ if __name__ == '__main__':
         Ts = np.array(args.T, dtype='int')
         ms = np.array(args.m, dtype='float')
 
-        wf = WrightFisherPopulation(N=N)
+        wf = WrightFisherPopulation(population_size=N, migration_times=Ts,
+                                    migration_probabilities=ms,
+                                    migration_sources=sources)
         sim_count = 1
-        sources, end_points = wf.simulate_tracts(
-            r=r, ms=ms, Ts=Ts, sources=sources)
+        sources, end_points = wf.simulate_tracts(r=r)
         tract_lengths = np.diff([0] + end_points)
 
         for i in range(len(sources)):

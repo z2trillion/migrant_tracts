@@ -1,6 +1,6 @@
 import numpy as np
 
-from multiple_pulses_2 import Population
+from multiple_pulses import WrightFisherPopulation
 
 np.random.seed(0)
 
@@ -10,8 +10,9 @@ ms = np.array([0.5, 0.1, 1.0])
 Ts = np.array([5, 10, 11])
 sources = ['New York', 'California', 'Montana']
 
-wf = Population(population_size=N, migration_times=Ts,
-                migration_sources=sources, migration_probabilities=ms)
+wf = WrightFisherPopulation(population_size=N, migration_times=Ts,
+                            migration_sources=sources,
+                            migration_probabilities=ms)
 sources, end_points = wf.simulate_tracts(recombination_distance)
 
 tract_lengths = np.diff(end_points)
